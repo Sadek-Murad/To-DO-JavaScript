@@ -1,6 +1,5 @@
 const mysql = require('mysql2');
 const express = require('express');
-const dotenv = require('dotenv')
 const app = express()
 const port = 3000;
 require('dotenv').config();
@@ -23,38 +22,41 @@ app.use(express.json());
 
 
 
-app.get("/todo", (req, res) => {
-    const selectSql = "SELECT * FROM items";
-    cnx.query(selectSql, (err, results) => {
+app.get("/", (req, res) => {
+    const selectSql = "SELECT * FROM items;"
+    cnx.query(selectSql, (err, results) => { 
+        console.log(err);
         res.json({todos: results})
-
-
-
     });
 });
 
 
-
-app.post('/hello', (request, response) => {
+app.post('/', (request, response) => {
     const { description } = request.body;
-    const insertSQL = 'INSERT INTO items (description) VALUES (?)';
-    cnx.query(insertSQL, [description])
+    const insertSQL = 'INSERT INTO items (description) VALUES (?);';
+    cnx.query(insertSQL, [description], (err, results) => {
+        response.status(200).send();
+    }) 
            
-     response.redirect("/");
-           
-});
-
-app.post('/delete', (request, response) => {
-    const { id } = request.body;
-    const deleteSql = 'DELETE FROM items WHERE id = ?';
-    cnx.query(deleteSql, [id])
-           
-     response.redirect("/");
+    
            
 });
 
-app.post('/update', (request, response) => {
+app.delete('/', (request, response) => {
     const { id } = request.body;
+    const deleteSql = 'DELETE FROM items WHERE id = ?;';
+    cnx.query(deleteSql, [id], (err, results) => {
+        //response.status(400);
+    })
+           
+     response.status(200).send();
+           
+});
+
+app.put('/', (request, response) => {
+    console.log(request.body);
+    const { id } = request.body;
+    
 
     
   const updateSql = `
@@ -67,11 +69,11 @@ app.post('/update', (request, response) => {
     WHERE id = ?;
   `;
     cnx.query(updateSql, [id], (err, results) => {
-
+        response.status(200).send();
 
     })
            
-     response.redirect("/");
+    
            
 });
 
